@@ -1,15 +1,8 @@
 :-['data.pl'].
 :-['utils.pl'].
 
-group_list([G]):-group(G).
-group_list([T|Q]):-group(T), not_in(T,Q), group_list(Q).
-
-assignement([Time_slot,Room,Prof,Course,Group]):-
-	time_slot(Time_slot),
-	room(Room),
-	prof(Prof),
-	course(Course),
-	group_list(Group).
+group_list([G]):- group(G).
+group_list([T|Q]):- group(T), not_in(T,Q), group_list(Q).
 
 get_time_slot([Time_slot,_,_,_,_], Time_slot).
 get_room([_,Room,_,_,_], Room).
@@ -23,11 +16,20 @@ all_groups_attend([Group|T],Course):-
 	member(Course,L),
 	all_groups_attend(T,Course).
 
+assignement([Time_slot,Room,Prof,Course,Group]):-
+	time_slot(Time_slot),
+	room(Room),
+	prof(Prof),
+	course(Course),
+	group_list(Group),
+	teach(Prof,Taught_courses),
+	member(Course, Taught_courses),
+	all_groups_attend(Group,Course).
+
 all_groups_available(_,[],_).
 all_groups_available(Time_slot,[Group|T],TG):-
 	member([Time_slot,Group],TG),
 	all_groups_available(Time_slot,T,TG).
-
 
 delete_groups(_,[],TG,TG).
 delete_groups(Time_slot,[H|T],TG,New_TG):-
@@ -59,16 +61,16 @@ valid_solution([Assign|T], TR, TP, TG, Course_list):-
 	get_prof(Assign,Prof),
 	get_course(Assign,Course),
 	get_groups(Assign,Group_list),
-	teach(Prof,Taught_courses),
-	member(Course, Taught_courses),
-	all_groups_attend(Group_list,Course),
+	
 	member([Time_slot,Room],TR),
 	member([Time_slot,Prof],TP),
 	all_groups_available(Time_slot,Group_list,TG),
+	
 	delete_item([Time_slot,Room],TR,New_TR),
 	delete_item([Time_slot,Prof],TP,New_TP),
 	delete_groups(Time_slot,Group_list,TG,New_TG),
 	delete_item(Course,Course_list,New_Course_list),
+	
 	valid_solution(T, New_TR, New_TP,New_TG,New_Course_list).
 
 main(S):-
