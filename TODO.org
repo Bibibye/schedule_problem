@@ -1,0 +1,7 @@
+* TODO Make a better interface to logic approach
+* TODO Test logic approach
+* TODO Write documentation about logic approach
+* TODO Write documentation about the problem
+* TODO SAT approach
+* TODO Graph approch
+* TODO Genetic approach
