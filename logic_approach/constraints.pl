@@ -16,6 +16,12 @@ all_groups_attend([Group|T],Course):-
 	member(Course,L),
 	all_groups_attend(T,Course).
 
+sum_students([],0).
+sum_students([Group|T],Sum):-
+	sum_students(T,Sum_tmp),
+	nb_students(Group, Nb_students),
+	Sum is Sum_tmp + Nb_students.
+
 assignement([Time_slot,Room,Prof,Course,Group]):-
 	time_slot(Time_slot),
 	room(Room),
@@ -24,7 +30,10 @@ assignement([Time_slot,Room,Prof,Course,Group]):-
 	group_list(Group),
 	teach(Prof,Taught_courses),
 	member(Course, Taught_courses),
-	all_groups_attend(Group,Course).
+	all_groups_attend(Group,Course),
+	sum_students(Group,Nb_students),
+	nb_seats(Room, Nb_seats),
+	Nb_seats >= Nb_students.
 
 all_groups_available(_,[],_).
 all_groups_available(Time_slot,[Group|T],TG):-
